@@ -35,6 +35,13 @@ import org.json.simple.JSONValue;
 @Path("/Product")
 public class Product {
 
+    /**
+     * doGet method select all attribute from product table. call resultMethod()
+     * pass all product table data in resultMethod(). store all table data in
+     * String result variable
+     *
+     * @return result
+     */
     @GET
     @Produces("application/json")
     public String doGet() {
@@ -44,6 +51,13 @@ public class Product {
 
     }
 
+    /**
+     * doGet Method takes one parameter of type of string pass all product table
+     * data in resultMethod(). store all table data in String result variable
+     *
+     * @param id
+     * @return result
+     */
     @GET
     @Path("{id}")
     @Produces("application/json")
@@ -53,6 +67,13 @@ public class Product {
 
     }
 
+    /**
+     * doPost Method takes one parameter of type String. Used to Insert the
+     * values into Product table. get the name, description, quantity by using
+     * HashMap call doUpdate Method
+     *
+     * @param strValue
+     */
     @POST
     @Consumes("application/json")
     public void doPost(String strValue) {
@@ -85,6 +106,14 @@ public class Product {
 
     }
 
+    /**
+     * doPut Method takes two parameters of type string Used to Insert the
+     * values into Product table. get the name, description, quantity by using
+     * HashMap
+     *
+     * @param id
+     * @param strValue
+     */
     @PUT
     @Path("{id}")
     @Consumes("application/json")
@@ -116,6 +145,13 @@ public class Product {
         doUpdate("update product set ProductID = ?, name = ?, description = ?, quantity = ? where ProductID = ?", id, getName, getDesc, getQuantity, id);
     }
 
+    /**
+     * doDelete takes one parameter of type String. Used to delete the
+     * values into Product table. get the name, description, quantity by using
+     * Simple Json Library
+     * @param id
+     * @param strValue
+     */
     @DELETE
     @Path("{id}")
     @Consumes("application/json")
@@ -125,8 +161,8 @@ public class Product {
 
     /**
      * resultMethod accepts two arguments It executes the Query get ProductID,
-     * name, description, quantity
-     *
+     * name, description, quantity.
+     * Get
      * @param query
      * @param params
      * @throws SQLException
