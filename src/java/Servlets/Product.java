@@ -12,11 +12,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -26,7 +26,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import org.json.simple.JSONValue;
 
 /**
  *
@@ -146,9 +145,10 @@ public class Product {
     }
 
     /**
-     * doDelete takes one parameter of type String. Used to delete the
-     * values into Product table. get the name, description, quantity by using
-     * Simple Json Library
+     * doDelete takes one parameter of type String. Used to delete the values
+     * into Product table. get the name, description, quantity by using Simple
+     * Json Library
+     *
      * @param id
      * @param strValue
      */
@@ -161,40 +161,39 @@ public class Product {
 
     /**
      * resultMethod accepts two arguments It executes the Query get ProductID,
-     * name, description, quantity.
-     * Get
+     * name, description, quantity. Used JSON object model and provides methods
+     * to add name/value pairs to the object model and to return the resulting
+     * object
+     *
      * @param query
      * @param params
      * @throws SQLException
      * @return
      */
     private String resultMethod(String query, String... params) {
-        StringBuilder sb = new StringBuilder();
-        String jsonString = "";
+        String strJson = "";
+        JsonArrayBuilder jsonArrayObj = Json.createArrayBuilder();
         try (Connection conn = Credentials.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             for (int i = 1; i <= params.length; i++) {
                 pstmt.setString(i, params[i - 1]);
             }
             ResultSet rs = pstmt.executeQuery();
-            List l1 = new LinkedList();
             while (rs.next()) {
-                //Refernce Example 5-2 - Combination of JSON primitives, Map and List
-                //https://code.google.com/p/json-simple/wiki/EncodingExamples
-                Map m1 = new LinkedHashMap();
-                m1.put("ProductID", rs.getInt("ProductID"));
-                m1.put("name", rs.getString("name"));
-                m1.put("description", rs.getString("description"));
-                m1.put("quantity", rs.getInt("quantity"));
-                l1.add(m1);
+                JsonObject json = Json.createObjectBuilder()
+                        .add("ProductID", rs.getInt("ProductID"))
+                        .add("name", rs.getString("name"))
+                        .add("description", rs.getString("description"))
+                        .add("quantity", rs.getInt("quantity")).build();
 
+                jsonArrayObj.add(json);
             }
-
-            jsonString = JSONValue.toJSONString(l1);
         } catch (SQLException ex) {
             System.err.println("SQL Exception Error: " + ex.getMessage());
         }
-        return jsonString.replace("},", "},\n");
+
+        strJson = jsonArrayObj.build().toString();
+        return strJson;
     }
 
     /**
